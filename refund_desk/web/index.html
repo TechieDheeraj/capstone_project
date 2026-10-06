@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Refund Desk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Public+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M7 13h18v9a6 6 0 0 1-6 6h-6a6 6 0 0 1-6-6z' fill='%232f45c9'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 13h18v9a6 6 0 0 1-6 6h-6a6 6 0 0 1-6-6z" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M25 15h2.5a3 3 0 0 1 0 6H25" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 9c0-2 2-2 2-4M17 9c0-2 2-2 2-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <div><b>Refund Desk</b><span>support agent · Copper Kettle Co. (demo shop)</span></div>
+    </div>
+    <div class="top-right">
+      <span class="chip" id="mode">…</span>
+      <a href="https://github.com/TechieDheeraj/capstone_project" rel="noopener">Code</a>
+      <a href="/api/docs">API</a>
+      <button class="ghost" id="theme" type="button">Theme</button>
+    </div>
+  </header>
+
+  <main class="grid">
+    <!-- ============ 1. Inbox ============ -->
+    <section class="col inbox" aria-label="Inbox">
+      <h2>Inbox</h2>
+      <ul class="tickets" id="tickets"></ul>
+      <details class="compose">
+        <summary>Write your own ticket</summary>
+        <form id="compose" autocomplete="off">
+          <label>Your name <input name="from_name" value="Maya Lindqvist" required maxlength="120"></label>
+          <label>Your e-mail <input name="from_email" value="maya.lindqvist@example.com" required maxlength="200"></label>
+          <label>Subject <input name="subject" value="Question about my order" required maxlength="200"></label>
+          <label>Message <textarea name="body" rows="5" required maxlength="2000">Hi, my order A-1001 arrived but the carafe is cracked. Can you help?</textarea></label>
+          <p class="hint">Use an e-mail from the demo shop (see the inbox) so the agent can find the orders.</p>
+          <button type="submit" class="primary">Run the agent</button>
+        </form>
+      </details>
+      <div class="lab">
+        <h3>Break things on purpose</h3>
+        <label class="switch"><input type="checkbox" id="carrier-down"><span>Carrier API outage</span></label>
+        <p class="hint">Turn it on, then run T-102. The agent retries, opens the circuit breaker and reads the tracking web page instead.</p>
+      </div>
+      <h3>Recent runs</h3>
+      <ul class="runs" id="runs"></ul>
+    </section>
+
+    <!-- ============ 2. The live run ============ -->
+    <section class="col live" aria-label="Live run">
+      <div class="ticket-card" id="ticket-card"><p class="empty">Pick a ticket from the inbox.</p></div>
+      <div class="run-head" id="run-head" hidden></div>
+      <ol class="timeline" id="timeline" aria-live="polite"></ol>
+      <div class="reply" id="reply-wrap" hidden>
+        <h3>Reply e-mail <span class="muted" id="reply-state">the model writes it now…</span></h3>
+        <pre id="reply"></pre>
+      </div>
+      <div id="approval"></div>
+      <div class="done" id="done" hidden></div>
+    </section>
+
+    <!-- ============ 3. Inspector ============ -->
+    <section class="col inspect" aria-label="Inspector">
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="seen">What the model saw</button>
+        <button role="tab" aria-selected="false" data-tab="trace">Trace</button>
+        <button role="tab" aria-selected="false" data-tab="spend">Spend</button>
+      </div>
+      <div class="panel" id="tab-seen"><p class="empty">After a run, this shows every message that went to the model: redacted, with untrusted text in tags.</p></div>
+      <div class="panel" id="tab-trace" hidden><p class="empty">The trace shows every model call, tool call and decision on a time line.</p></div>
+      <div class="panel" id="tab-spend" hidden><p class="empty">Tokens, cost and the budget of the run.</p></div>
+    </section>
+  </main>
+
+  <footer class="foot">Demo data only: invented customers and orders. The offline model is a scripted stand-in for an LLM; its tokens and cost are estimates.</footer>
+  <script src="/static/app.js"></script>
+</body>
+</html>

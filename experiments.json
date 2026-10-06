@@ -1,0 +1,12 @@
+{
+  "experiments": [
+    {
+      "name": "sonnet5-on-hard-tickets",
+      "route": "large",
+      "control": "claude-opus-5-5",
+      "candidate": "claude-sonnet-5",
+      "percent": 10,
+      "enabled": true
+    }
+  ]
+}

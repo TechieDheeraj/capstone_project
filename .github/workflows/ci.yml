@@ -1,0 +1,49 @@
+# CI: lint, tests, then the EVAL GATE. A pull request that lowers the eval
+# scores (or breaks any safety check) gets a red build and cannot deploy.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-and-eval:
+    runs-on: ubuntu-latest
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - name: Lint
+        run: ruff check refund_desk tests
+      - name: Unit and integration tests
+        run: MODEL_MODE=offline pytest -q
+      - name: Eval gate (offline model, always)
+        run: MODEL_MODE=offline refund-desk eval --gate --out eval-offline.json
+      - name: Eval gate (Claude, only when the repository has the secret)
+        if: env.ANTHROPIC_API_KEY != ''
+        run: MODEL_MODE=claude refund-desk eval --gate --out eval-claude.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eval-reports
+          path: eval-*.json
+
+  docker:
+    needs: test-and-eval
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the image
+        run: docker build -t refund-desk .
+      - name: Smoke test the container
+        run: |
+          docker run -d --name rd -p 8000:8000 --read-only --tmpfs /tmp refund-desk
+          for i in $(seq 1 30); do curl -fs localhost:8000/api/health && break; sleep 1; done
+          curl -fs localhost:8000/api/health | grep '"demo":true'
+          docker logs rd

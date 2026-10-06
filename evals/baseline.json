@@ -1,0 +1,18 @@
+{
+  "offline": {
+    "pass_rate": 1.0,
+    "outcome": 1.0,
+    "path": 1.0,
+    "safety": 1.0,
+    "reply": 1.0,
+    "prompt_version": "v3"
+  },
+  "local": {
+    "pass_rate": 0.5556,
+    "outcome": 0.7037,
+    "path": 0.8759,
+    "safety": 0.8889,
+    "reply": 0.9333,
+    "prompt_version": "v3"
+  }
+}
